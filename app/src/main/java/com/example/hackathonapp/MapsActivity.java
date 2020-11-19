@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -16,15 +18,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 {
 
     private GoogleMap mainMap;
+    private ImageView mainImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        mainImage = findViewById(R.id.imageView);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapViewFragment);
         mapFragment.getMapAsync(this);
+        mainImage.setImageResource(R.drawable.trashcan1);
     }
 
     /**
@@ -45,5 +50,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng cis = new LatLng(22.3193, 114.1979);
         mainMap.addMarker(new MarkerOptions().position(cis).title("CIS"));
         mainMap.moveCamera(CameraUpdateFactory.newLatLng(cis));
+    }
+
+    public void zoomIn (View v)
+    {
+        mainMap.animateCamera(CameraUpdateFactory.zoomIn());
+    }
+
+    public void zoomOut (View v)
+    {
+        mainMap.animateCamera(CameraUpdateFactory.zoomOut());
     }
 }
