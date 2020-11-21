@@ -6,15 +6,75 @@
     android:layout_height="match_parent"
     tools:context=".AddLocationActivity">
 
+    <TextView
+        android:id="@+id/recycleInfoText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:text="Recycling types (recycling bins only):"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/binType" />
+
+    <LinearLayout
+        android:id="@+id/recycleType"
+        android:layout_width="414dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/enterInstructionsText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.533"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <CheckBox
+            android:id="@+id/glassCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Glass"
+            android:textColorHighlight="#43A047"
+            android:textColorHint="#FFFFFF"
+            android:textColorLink="#43A047" />
+
+        <CheckBox
+            android:id="@+id/metalCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Metal"
+            android:textColorHighlight="#43A047"
+            android:textColorLink="#7CB342" />
+
+        <CheckBox
+            android:id="@+id/paperCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Paper"
+            android:textColorHighlight="#43A047"
+            android:textColorLink="#7CB342" />
+
+        <CheckBox
+            android:id="@+id/plasticCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Plastic"
+            android:textColorHighlight="#43A047"
+            android:textColorLink="#7CB342" />
+
+    </LinearLayout>
+
     <fragment
         android:id="@+id/mapViewAddFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="320dp"
         android:layout_height="320dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="96dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         tools:context="com.example.mapwithmarker.MapsMarkerActivity">
 
@@ -31,24 +91,19 @@
     </fragment>
 
     <LinearLayout
+        android:id="@+id/binType"
         android:layout_width="265dp"
         android:layout_height="121dp"
-        android:layout_marginTop="96dp"
+        android:layout_marginTop="80dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <Spinner
-            android:id="@+id/spinner1"
+            android:id="@+id/typeSpinner"
             android:layout_width="match_parent"
             android:layout_height="45dp" />
-
-        <Button
-            android:id="@+id/btnSubmit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button" />
 
     </LinearLayout>
 
@@ -84,6 +139,78 @@
         app:layout_constraintStart_toEndOf="@+id/mapViewAddFragment"
         app:layout_constraintStart_toStartOf="@+id/mapViewAddFragment"
         app:layout_constraintTop_toBottomOf="@+id/zoomIn2" />
+
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:onClick="saveLocation"
+        android:text="add bin"
+        app:backgroundTint="#43A047"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/enterInstructionsText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Enter location address:"
+        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextTextPersonName"
+        android:layout_width="376dp"
+        android:layout_height="38dp"
+        android:layout_marginBottom="8dp"
+        android:ems="10"
+        android:hint="1 Street Road, Distrct, City"
+        android:inputType="textPersonName"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/nextInstructionsText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/nextInstructionsText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Or, use the Google Map to pinpoint your location!"
+        app:layout_constraintBottom_toTopOf="@+id/mapViewAddFragment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/addTitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Locate your bin!"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="240dp"
+        android:layout_height="35dp"
+        android:gravity="center"
+        android:text="Input the type of bin, type of recycling (where applicable), and location."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addTitleText" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

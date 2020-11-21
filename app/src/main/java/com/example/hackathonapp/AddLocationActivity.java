@@ -2,12 +2,15 @@ package com.example.hackathonapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -18,6 +21,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -25,10 +29,19 @@ import java.util.List;
 
 public class AddLocationActivity extends AppCompatActivity implements OnMapReadyCallback
 {
+    private Spinner typeSpinner;
+    private CheckBox glassCheck;
+    private CheckBox metalCheck;
+    private CheckBox paperCheck;
+    private CheckBox plasticCheck;
 
-    String type = ConstantsEH.NoType;
-    private Spinner spinner1;
-    private Button btnSubmit;
+    //CHANGE THESE TO USERS LOCATION
+    LatLng hkg = new LatLng(22.3193, 114.1694);
+    LatLng thisLocation = hkg;
+    MarkerOptions marker = new MarkerOptions().position(hkg).title("Hong Kong").draggable(true);
+    ArrayList<CheckBox> checkedBoxes = new ArrayList<CheckBox>();
+    ArrayList<String> recycleTypes = new ArrayList<String>();
+
 
     private GoogleMap addMap;
     @Override
@@ -40,28 +53,50 @@ public class AddLocationActivity extends AppCompatActivity implements OnMapReady
                 .findFragmentById(R.id.mapViewAddFragment);
         mapFragment.getMapAsync(this);
 
-        addListenerOnButton();
-        addListenerOnSpinnerItemSelection();
+        glassCheck = (CheckBox) findViewById(R.id.glassCheck);
+        checkedBoxes.add(glassCheck);
+        metalCheck = (CheckBox) findViewById(R.id.metalCheck);
+        checkedBoxes.add(metalCheck);
+        paperCheck = (CheckBox) findViewById(R.id.paperCheck);
+        checkedBoxes.add(paperCheck);
+        plasticCheck = (CheckBox) findViewById(R.id.plasticCheck);
+        checkedBoxes.add(plasticCheck);
 
-        // Construct a GeoDataClient.
-        //mGeoDataClient = Places.getGeoDataClient(this, null);
+        typeSpinner = (Spinner) findViewById(R.id.typeSpinner);
+        ArrayAdapter<CharSequence> dataAdapter = ArrayAdapter.createFromResource(this,
+        R.array.types_array, android.R.layout.simple_spinner_item);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        typeSpinner.setAdapter(dataAdapter);
 
-        // Construct a PlaceDetectionClient.
-        //mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
-
-        // Construct a FusedLocationProviderClient.
-        //mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap)
     {
         addMap = googleMap;
-
-        // Add a marker and move the camera
-        LatLng hkg = new LatLng(22.3193, 114.1694);
-        addMap.addMarker(new MarkerOptions().position(hkg).title("Hong Kong").draggable(true));
+        addMap.addMarker(marker);
         addMap.moveCamera(CameraUpdateFactory.newLatLng(hkg));
+
+        addMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener()
+        {
+            @Override
+            public void onMarkerDragStart(Marker marker)
+            {
+
+            }
+
+            @Override
+            public void onMarkerDrag(Marker marker)
+            {
+
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker)
+            {
+                thisLocation = marker.getPosition();
+            }
+        });
     }
 
     public void zoomIn (View v)
@@ -74,69 +109,20 @@ public class AddLocationActivity extends AppCompatActivity implements OnMapReady
         addMap.animateCamera(CameraUpdateFactory.zoomOut());
     }
 
-    public void addItemsOnSpinner() {
-
-        spinner1 = (Spinner) findViewById(R.id.spinner1);
-        List<String> list = new ArrayList<String>();
-        list.add("list 1");
-        list.add("list 2");
-        list.add("list 3");
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, list);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner1.setAdapter(dataAdapter);
-    }
-
-    public void addListenerOnSpinnerItemSelection() {
-        spinner1 = (Spinner) findViewById(R.id.spinner1);
-        spinner1.setOnItemSelectedListener(new CustomOnItemSelectedListener());
-    }
-
-    // get the selected dropdown list value
-    public void addListenerOnButton() {
-
-        spinner1 = (Spinner) findViewById(R.id.spinner1);
-        btnSubmit = (Button) findViewById(R.id.btnSubmit);
-
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-//                Toast.makeText(MyAndroidAppActivity.this,
-//                        "OnClickListener : " +
-//                                "\nSpinner 1 : "+ String.valueOf(spinner1.getSelectedItem()) ,
-//                        Toast.LENGTH_SHORT).show();
+    public void saveLocation(View v)
+    {
+        System.out.println(thisLocation);
+        String selectedBinType = typeSpinner.getSelectedItem().toString().toLowerCase();
+        System.out.println(selectedBinType);
+        for (CheckBox c : checkedBoxes)
+        {
+            if (c.isChecked() && selectedBinType.equals("recycling bin"))
+            {
+                String rt = c.getText().toString().toLowerCase();
+                recycleTypes.add(rt);
+                System.out.println(rt);
             }
-
-        });
+        }
     }
-
-//    public void onRadioButtonClicked(View view) {
-//        // Is the button now checked?
-//        boolean checked = ((RadioButton) view).isChecked();
-//        if (checked) {
-//            // Check which radio button was clicked
-//            switch (view.getId()) {
-//                case R.id.recyclingBin:
-//                    if (checked)
-//                        type = ConstantsEH.RecycleType;
-//                        Log.d("radioButton", ConstantsEH.RecycleType);
-//
-//                        break;
-//                case R.id.trashBin:
-//                    if (checked)
-//                        type = ConstantsEH.TrashType;
-//                        Log.d("radioButton", ConstantsEH.TrashType);
-//                        break;
-//                case R.id.clothesBin:
-//                    if (checked)
-//                        type = ConstantsEH.ClothesType;
-//                        Log.d("radioButton", ConstantsEH.ClothesType);
-//                        break;
-//            }
-//        }
-//    }
-
 
 }
