@@ -1,10 +1,13 @@
 package com.example.hackathonapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,11 +32,16 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
 
 public class AddLocationActivity extends AppCompatActivity implements OnMapReadyCallback
 {
+    Geocoder geocoder;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private Spinner typeSpinner;
@@ -45,12 +53,14 @@ public class AddLocationActivity extends AppCompatActivity implements OnMapReady
     boolean metal = false;
     boolean paper = false;
     boolean plastic = false;
+    List<Address> addresses = null;
 
     //CHANGE THESE TO USERS LOCATION
     LatLng hkg = new LatLng(22.3193, 114.1694);
     double thisLatitude = 0;
     double thisLongitude = 0;
     MarkerOptions marker = new MarkerOptions().position(hkg).title("Hong Kong").draggable(true);
+
 
     private GoogleMap addMap;
     @Override
@@ -102,6 +112,19 @@ public class AddLocationActivity extends AppCompatActivity implements OnMapReady
             {
                 thisLatitude = marker.getPosition().latitude;
                 thisLongitude = marker.getPosition().longitude;
+                //LatLng theseCords = new LatLng(thisLatitude, thisLongitude);
+                geocoder = new Geocoder(AddLocationActivity.this, Locale.getDefault());
+                try
+                {
+                    System.out.println("I am trying");
+                    addresses = geocoder.getFromLocation(thisLatitude, thisLongitude,1);
+                    System.out.print("hi " + addresses.get(0).getAddressLine(0));
+                }
+                catch (IOException e)
+                {
+                    System.out.println("Exception time");
+                    e.printStackTrace();
+                }
             }
         });
     }

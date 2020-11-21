@@ -10,6 +10,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -41,7 +42,6 @@ import static android.provider.SettingsSlicesContract.KEY_LOCATION;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback
 {
-
     private GoogleMap mainMap;
     private ImageView mainImage;
 
@@ -51,15 +51,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean network_enable = false;
 
     public LocationManager locationManager;
-    public LocationListener locationListener = new MyLocationListner();
+    public LocationListener locationListener = new MyLocationListener();
     LatLng userLatLong;
 
     Geocoder geocoder;
     List<Address> myAddress;
-
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -75,12 +71,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Prompt the user for permission.
         checkUserPermission();
+        getMyLocation();
         // Get location
         locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-
-
     }
-
 
     /**
      * Manipulates the map once available.
@@ -96,14 +90,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         mainMap = googleMap;
 
-//        // Add a marker and move the camera
-//        LatLng cis = new LatLng(22.3193, 114.1979);
-//        mainMap.addMarker(new MarkerOptions().position(cis).title("CIS"));
-//        mainMap.moveCamera(CameraUpdateFactory.newLatLng(cis));
-
-
         //current location
         LatLng current = new LatLng(lat, lon);
+        System.out.println("lat: " + lat + "; lon: " + lon);
         mainMap.addMarker(new MarkerOptions().position(current).title("CURRENT"));
         mainMap.moveCamera(CameraUpdateFactory.newLatLng(current));
 
@@ -136,24 +125,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             if (!gps_enable && !network_enable){
                 // alert the user to allow location to be seen
-                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MapsActivity.this );
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MapsActivity.this);
                 builder.setMessage("Location is not enabled.");
-
                 builder.create().show();
 
             }
-            if(gps_enable){
+            if (gps_enable)
+            {
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,locationListener);
             }
-            if(network_enable){
+            if (network_enable)
+            {
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,locationListener);
             }
         }
-
     }
 
-
-    class MyLocationListner implements LocationListener{
+    class MyLocationListener implements LocationListener{
 
         @Override
         public void onLocationChanged(@NonNull Location location) {

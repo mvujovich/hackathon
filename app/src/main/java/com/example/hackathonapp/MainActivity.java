@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.View;
 
@@ -27,7 +28,6 @@ public class MainActivity extends AppCompatActivity
     ArrayList<Bin> allLocations = new ArrayList<Bin>();
 
     Geocoder geocoder;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
