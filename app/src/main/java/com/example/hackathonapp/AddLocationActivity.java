@@ -1,5 +1,6 @@
 package com.example.hackathonapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -23,25 +24,33 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AddLocationActivity extends AppCompatActivity implements OnMapReadyCallback
 {
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     private Spinner typeSpinner;
     private CheckBox glassCheck;
     private CheckBox metalCheck;
     private CheckBox paperCheck;
     private CheckBox plasticCheck;
+    boolean glass = false;
+    boolean metal = false;
+    boolean paper = false;
+    boolean plastic = false;
 
     //CHANGE THESE TO USERS LOCATION
     LatLng hkg = new LatLng(22.3193, 114.1694);
-    LatLng thisLocation = hkg;
+    double thisLatitude = 0;
+    double thisLongitude = 0;
     MarkerOptions marker = new MarkerOptions().position(hkg).title("Hong Kong").draggable(true);
-    ArrayList<CheckBox> checkedBoxes = new ArrayList<CheckBox>();
-    ArrayList<String> recycleTypes = new ArrayList<String>();
-
 
     private GoogleMap addMap;
     @Override
@@ -54,13 +63,9 @@ public class AddLocationActivity extends AppCompatActivity implements OnMapReady
         mapFragment.getMapAsync(this);
 
         glassCheck = (CheckBox) findViewById(R.id.glassCheck);
-        checkedBoxes.add(glassCheck);
         metalCheck = (CheckBox) findViewById(R.id.metalCheck);
-        checkedBoxes.add(metalCheck);
         paperCheck = (CheckBox) findViewById(R.id.paperCheck);
-        checkedBoxes.add(paperCheck);
         plasticCheck = (CheckBox) findViewById(R.id.plasticCheck);
-        checkedBoxes.add(plasticCheck);
 
         typeSpinner = (Spinner) findViewById(R.id.typeSpinner);
         ArrayAdapter<CharSequence> dataAdapter = ArrayAdapter.createFromResource(this,
@@ -76,6 +81,7 @@ public class AddLocationActivity extends AppCompatActivity implements OnMapReady
         addMap = googleMap;
         addMap.addMarker(marker);
         addMap.moveCamera(CameraUpdateFactory.newLatLng(hkg));
+        addMap.moveCamera(CameraUpdateFactory.zoomTo(15));
 
         addMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener()
         {
@@ -94,7 +100,8 @@ public class AddLocationActivity extends AppCompatActivity implements OnMapReady
             @Override
             public void onMarkerDragEnd(Marker marker)
             {
-                thisLocation = marker.getPosition();
+                thisLatitude = marker.getPosition().latitude;
+                thisLongitude = marker.getPosition().longitude;
             }
         });
     }
@@ -111,17 +118,89 @@ public class AddLocationActivity extends AppCompatActivity implements OnMapReady
 
     public void saveLocation(View v)
     {
-        System.out.println(thisLocation);
-        String selectedBinType = typeSpinner.getSelectedItem().toString().toLowerCase();
-        System.out.println(selectedBinType);
-        for (CheckBox c : checkedBoxes)
+        if (glassCheck.isChecked())
         {
-            if (c.isChecked() && selectedBinType.equals("recycling bin"))
-            {
-                String rt = c.getText().toString().toLowerCase();
-                recycleTypes.add(rt);
-                System.out.println(rt);
-            }
+            glass = true;
+        }
+        if (metalCheck.isChecked())
+        {
+            metal = true;
+        }
+        if (paperCheck.isChecked())
+        {
+            paper = true;
+        }
+        if (plasticCheck.isChecked())
+        {
+            plastic = true;
+        }
+        String selectedBinType = typeSpinner.getSelectedItem().toString().toLowerCase();
+
+        if (selectedBinType.equals("recycling bin"))
+        {
+                RecyclerBin thisBin = new RecyclerBin(thisLongitude, thisLatitude,
+                        "Random place", glass, metal, paper, plastic);
+                db.collection("bins").add(thisBin)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>()
+                        {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference)
+                        {
+                            Log.d("ADD_BIN", "DocumentSnapshot added with ID: "
+                                    + documentReference.getId());
+                        }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w("ADD_BIN", "Error adding document", e);
+                            }
+                        });
+        }
+        else if (selectedBinType.equals("trash bin"))
+        {
+            TrashBin thisBin = new TrashBin(thisLongitude, thisLatitude, "Random place 2");
+            db.collection("bins").add(thisBin)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>()
+                    {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference)
+                        {
+                            Log.d("ADD_BIN", "DocumentSnapshot added with ID: "
+                                    + documentReference.getId());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w("ADD_BIN", "Error adding document", e);
+                        }
+                    });
+        }
+        else if (selectedBinType.equals("clothes recycling bin"))
+        {
+            ClothesBin thisBin = new ClothesBin(thisLongitude, thisLatitude,
+                    "Random place");
+            db.collection("bins").add(thisBin)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>()
+                    {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference)
+                        {
+                            Log.d("ADD_BIN", "DocumentSnapshot added with ID: "
+                                    + documentReference.getId());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w("ADD_BIN", "Error adding document", e);
+                        }
+                    });
+        }
+        else
+        {
+            //Toast: please select a valid bin type
         }
     }
 

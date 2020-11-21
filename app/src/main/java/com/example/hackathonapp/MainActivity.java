@@ -30,8 +30,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         ClothesBin bin1 = new ClothesBin(33, 33, "Sai Wan Ho MTR station");
-        RecyclerBin bin2 = new RecyclerBin(33, 33, "CIS atrium", true,
-                true, false, true);
+        TrashBin bin2 = new TrashBin(33, 33, "CIS atrium");
         allLocations.add(bin1);
         allLocations.add(bin2);
         super.onCreate(savedInstanceState);

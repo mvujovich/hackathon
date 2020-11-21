@@ -2,7 +2,7 @@ package com.example.hackathonapp;
 
 public class TrashBin extends Bin {
 
-    public TrashBin(int longitude, int latitude, String loc) {
+    public TrashBin(double longitude, double latitude, String loc) {
         super(longitude, latitude, loc);
     }
 
