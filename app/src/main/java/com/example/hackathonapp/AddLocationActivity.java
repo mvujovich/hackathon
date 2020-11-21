@@ -55,9 +55,14 @@ public class AddLocationActivity extends AppCompatActivity implements OnMapReady
         addMap.moveCamera(CameraUpdateFactory.newLatLng(hkg));
     }
 
-    public void resetButton(View view){
-        type = ConstantsEH.NoType;
-        Log.d("radioButton", ConstantsEH.NoType);
+    public void zoomIn (View v)
+    {
+        addMap.animateCamera(CameraUpdateFactory.zoomIn());
+    }
+
+    public void zoomOut (View v)
+    {
+        addMap.animateCamera(CameraUpdateFactory.zoomOut());
     }
 
     public void addItemsOnSpinner() {

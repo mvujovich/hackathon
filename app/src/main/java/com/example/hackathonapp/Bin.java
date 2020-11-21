@@ -1,20 +1,27 @@
 package com.example.hackathonapp;
 
 public class Bin {
-    int llong;
-    int llat;
+    double llong;
+    double llat;
+    String locationName;
 
-    public Bin(int longitude, int latitude){
+    public Bin(double longitude, double latitude, String loc){
         this.llong = longitude;
         this.llat = latitude;
+        this.locationName = loc;
     }
 
-    public int getLlat() {
+    public double getLlat() {
         return llat;
     }
 
-    public int getLlong() {
+    public double getLlong() {
         return llong;
+    }
+
+    public String getLocationName()
+    {
+        return locationName;
     }
 
     public void setLlat(int llat) {
@@ -23,5 +30,10 @@ public class Bin {
 
     public void setLlong(int llong) {
         this.llong = llong;
+    }
+
+    public void setLocationName(String loc)
+    {
+        this.locationName = loc;
     }
 }

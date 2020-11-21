@@ -52,5 +52,38 @@
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/zoomIn2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:minWidth="36dp"
+        android:minHeight="0dp"
+        android:onClick="zoomIn"
+        android:text="+"
+        android:textSize="14sp"
+        app:backgroundTint="#81C784"
+        app:iconPadding="0dp"
+        app:layout_constraintStart_toStartOf="@+id/mapViewAddFragment"
+        app:layout_constraintTop_toTopOf="@+id/mapViewAddFragment" />
+
+    <Button
+        android:id="@+id/zoomOut2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:minWidth="41dp"
+        android:minHeight="0dp"
+        android:onClick="zoomOut"
+        android:text="-"
+        android:textSize="14sp"
+        app:backgroundTint="#81C784"
+        app:iconPadding="0dp"
+        app:layout_constraintStart_toEndOf="@+id/mapViewAddFragment"
+        app:layout_constraintStart_toStartOf="@+id/mapViewAddFragment"
+        app:layout_constraintTop_toBottomOf="@+id/zoomIn2" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
