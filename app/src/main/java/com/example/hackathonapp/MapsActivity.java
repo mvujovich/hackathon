@@ -1,11 +1,5 @@
 package com.example.hackathonapp;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -14,34 +8,48 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-
-//        libraries.places.api.net.PlacesClient;
-
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.provider.SettingsSlicesContract.KEY_LOCATION;
-
-
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback
 {
+    private FusedLocationProviderClient fusedLocationProviderClient;
     private GoogleMap mainMap;
     private ImageView mainImage;
 
@@ -49,13 +57,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     double lon;
     private boolean gps_enable = false;
     private boolean network_enable = false;
+    private Location lastKnownLocation;
+
+    private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
+    private static final int DEFAULT_ZOOM = 15;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private boolean locationPermissionGranted;
 
     public LocationManager locationManager;
-    public LocationListener locationListener = new MyLocationListener();
     LatLng userLatLong;
 
     Geocoder geocoder;
     List<Address> myAddress;
+    Context context = this;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -67,13 +82,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.mapViewFragment);
         mapFragment.getMapAsync(this);
         mainImage.setImageResource(R.drawable.trashcan1);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
+        getLocationPermission();
 
         // Prompt the user for permission.
-        checkUserPermission();
-        getMyLocation();
+        //checkUserPermission();
+        //getMyLocation();
         // Get location
-        locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
     }
 
     /**
@@ -93,6 +109,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //current location
         LatLng current = new LatLng(lat, lon);
         System.out.println("lat: " + lat + "; lon: " + lon);
+
+        // Turn on the My Location layer and the related control on the map.
+        updateLocationUI();
+
+        // Get the current location of the device and set the position of the map.
+        getDeviceLocation();
+
         mainMap.addMarker(new MarkerOptions().position(current).title("CURRENT"));
         mainMap.moveCamera(CameraUpdateFactory.newLatLng(current));
 
@@ -108,7 +131,99 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mainMap.animateCamera(CameraUpdateFactory.zoomOut());
     }
 
-    // get location of the user
+    private void getLocationPermission()
+    {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED)
+        {
+            locationPermissionGranted = true;
+        }
+        else
+            {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        locationPermissionGranted = false;
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationPermissionGranted = true;
+                }
+            }
+        }
+        updateLocationUI();
+    }
+
+    private void updateLocationUI() {
+        if (mainMap == null) {
+            return;
+        }
+        try {
+            if (locationPermissionGranted) {
+                mainMap.setMyLocationEnabled(true);
+                mainMap.getUiSettings().setMyLocationButtonEnabled(true);
+            } else {
+                mainMap.setMyLocationEnabled(false);
+                mainMap.getUiSettings().setMyLocationButtonEnabled(false);
+                userLatLong = null;
+                getLocationPermission();
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
+    private void getDeviceLocation() {
+        /*
+         * Get the best and most recent location of the device, which may be null in rare
+         * cases when a location is not available.
+         */
+        try {
+            if (locationPermissionGranted) {
+                Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
+                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if (task.isSuccessful()) {
+                            // Set the map's camera position to the current location of the device.
+                            lastKnownLocation = task.getResult();
+                            if (lastKnownLocation != null) {
+                                Log.d("Maps Activity", "Current location is not null.");
+                                mainMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                        new LatLng(lastKnownLocation.getLatitude(),
+                                                lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                            }
+                        } else {
+                            Log.d("Maps Activity", "Current location is null. Using defaults.");
+                            Log.e("Maps Activity", "Exception: %s", task.getException());
+                            mainMap.moveCamera(CameraUpdateFactory
+                                    .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
+                            mainMap.getUiSettings().setMyLocationButtonEnabled(false);
+                        }
+                    }
+                });
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage(), e);
+        }
+    }
+
+/*// get location of the user
     public void getMyLocation(){
         if (checkUserPermission()){
             try{
@@ -187,7 +302,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         return true;
-    }
-
+    }*/
 
 }
