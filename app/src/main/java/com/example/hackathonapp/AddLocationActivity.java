@@ -42,6 +42,15 @@ public class AddLocationActivity extends AppCompatActivity implements OnMapReady
 
         addListenerOnButton();
         addListenerOnSpinnerItemSelection();
+
+        // Construct a GeoDataClient.
+        //mGeoDataClient = Places.getGeoDataClient(this, null);
+
+        // Construct a PlaceDetectionClient.
+        //mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
+
+        // Construct a FusedLocationProviderClient.
+        //mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     @Override
@@ -55,9 +64,14 @@ public class AddLocationActivity extends AppCompatActivity implements OnMapReady
         addMap.moveCamera(CameraUpdateFactory.newLatLng(hkg));
     }
 
-    public void resetButton(View view){
-        type = ConstantsEH.NoType;
-        Log.d("radioButton", ConstantsEH.NoType);
+    public void zoomIn (View v)
+    {
+        addMap.animateCamera(CameraUpdateFactory.zoomIn());
+    }
+
+    public void zoomOut (View v)
+    {
+        addMap.animateCamera(CameraUpdateFactory.zoomOut());
     }
 
     public void addItemsOnSpinner() {

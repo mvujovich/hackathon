@@ -17,10 +17,10 @@ import java.util.ArrayList;
 
 public class LocationRecyclerViewAdapter extends RecyclerView.Adapter<LocationViewHolder>
 {
-    ArrayList<String> myData;
+    ArrayList<Bin> myData;
     private Context myContext;
 
-    public LocationRecyclerViewAdapter(ArrayList<String> data, Context context)
+    public LocationRecyclerViewAdapter(ArrayList<Bin> data, Context context)
     {
         myData = data;
         this.myContext = context;
@@ -37,34 +37,31 @@ public class LocationRecyclerViewAdapter extends RecyclerView.Adapter<LocationVi
         return holder;
     }
 
-    /*
-    https://stackoverflow.com/questions/41875008/non-static-method-putextra-and-cannot-find
-    -symbol-method
-    This question saved me so I thought it only fair to cite!
-    https://stackoverflow.com/questions/31059390/android-null-pointer-exception-when-calling-new-
-    intent
-    I had to adapt this a lot and make a new method but after hours of pain it worked!
-    Thank you Morales Batowski! You are my hero :)
-    */
-
-    /**
-     * This method is used to allow the CISListingsAdapter to change the values of each item in
-     * the RecyclerView and helps in setting up the functionality of clicking the listing to
-     * open the ListingsInfoActivity view of the listing.
-     * @param holder The holder parameter represents the use of the CISListingViewHolder.
-     * @param position The position parameter is an integer representing which element of the
-     *                 ArrayList of data is to be accessed.
-     */
     @Override
     public void onBindViewHolder(@NonNull LocationViewHolder holder, int position)
     {
-        //holder.modelText.setText(myData.get(position).getModel());
-        //holder.ownerText.setText(myData.get(position).getOwner());
+
         //holder.basePrice.setText(myData.get(position).getBasePriceString());
 
         final int positionPass = position;
-        //final String modelMessage = myData.get(position).getModel();
-        //final String ownerMessage = myData.get(position).getOwner();
+        final String locationName = myData.get(position).getLocationName();
+        String typeName = "";
+        if (myData.get(position) instanceof TrashBin)
+        {
+            typeName = "Trash bin";
+        }
+        else if (myData.get(position) instanceof RecyclerBin)
+        {
+            typeName = "Recycling bin";
+        }
+        else if (myData.get(position) instanceof ClothesBin)
+        {
+            typeName = "Clothes recycling bin";
+        }
+        holder.nameText.setText(locationName);
+        holder.typeText.setText(typeName);
+        holder.kmsText.setText("20");
+
         //final String basePriceMessage = myData.get(position).getBasePriceString();
 
         holder.getLayout().setOnClickListener(new View.OnClickListener()

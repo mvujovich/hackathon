@@ -7,9 +7,10 @@ public class RecyclerBin extends Bin {
     boolean Paper;
     boolean Glass;
 
-    public RecyclerBin(int longitude, int latitude, boolean plastic, boolean metal, boolean paper,
+    public RecyclerBin(int longitude, int latitude, String loc,
+                       boolean plastic, boolean metal, boolean paper,
                        boolean glass) {
-        super(longitude, latitude);
+        super(longitude, latitude, loc);
         this.Plastic = plastic;
         this.Metal = metal;
         this.Paper = paper;
