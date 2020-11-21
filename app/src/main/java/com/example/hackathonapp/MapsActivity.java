@@ -30,6 +30,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.mapViewFragment);
         mapFragment.getMapAsync(this);
         mainImage.setImageResource(R.drawable.trashcan1);
+        
+
+//        // Construct a GeoDataClient.
+//        GeoDataClient mGeoDataClient = new GeoDataClient();
+//        mGeoDataClient = Places.getGeoDataClient(this, null);
+//
+//        // Construct a PlaceDetectionClient.
+//        mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
+//
+//        // Construct a FusedLocationProviderClient.
+//        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     /**
@@ -50,6 +61,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng cis = new LatLng(22.3193, 114.1979);
         mainMap.addMarker(new MarkerOptions().position(cis).title("CIS"));
         mainMap.moveCamera(CameraUpdateFactory.newLatLng(cis));
+
     }
 
     public void zoomIn (View v)
@@ -61,4 +73,5 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     {
         mainMap.animateCamera(CameraUpdateFactory.zoomOut());
     }
+
 }
