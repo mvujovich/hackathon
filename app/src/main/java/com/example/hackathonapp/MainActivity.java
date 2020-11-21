@@ -26,6 +26,9 @@ public class MainActivity extends AppCompatActivity
     Context context = this;
     ArrayList<Bin> allLocations = new ArrayList<Bin>();
 
+    Geocoder geocoder;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
