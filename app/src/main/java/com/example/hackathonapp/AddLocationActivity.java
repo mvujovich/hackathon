@@ -67,7 +67,7 @@ public class AddLocationActivity extends AppCompatActivity implements OnMapReady
     private Location lastKnownLocation;
 
     private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
-    private static final int DEFAULT_ZOOM = 15;
+    private static final int DEFAULT_ZOOM = 17;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean locationPermissionGranted;
 

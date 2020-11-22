@@ -67,10 +67,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void goMap(View v)
+    public void refreshLocations(View v)
     {
-        Intent nextScreen = new Intent(getBaseContext(), MapsActivity.class);
-        startActivity(nextScreen);
+        allLocations.clear();
+        getListItems();
+        myAdapter.notifyDataSetChanged();
     }
 
     public void goAdd(View v)
