@@ -1,26 +1,23 @@
 package com.example.hackathonapp;
 
-import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,7 +25,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
@@ -36,25 +32,24 @@ import java.util.List;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback
 {
     private FusedLocationProviderClient fusedLocationProviderClient;
     private GoogleMap mainMap;
     private ImageView mainImage;
+    private TextView titleView;
+    private TextView cordsView;
+    private TextView typeView;
+    private TextView recyclingTypes;
 
     double lat;
     double lon;
+    double markerLat;
+    double markerLon;
+    String locationTitle;
+    String locationType;
+
     private boolean gps_enable = false;
     private boolean network_enable = false;
     private Location lastKnownLocation;
@@ -66,18 +61,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public LocationManager locationManager;
     LatLng userLatLong;
+    LatLng binLatLong;
 
     Geocoder geocoder;
     List<Address> myAddress;
     Context context = this;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        Intent intent = getIntent();
+
         mainImage = findViewById(R.id.imageView);
+        titleView = findViewById(R.id.locationTitleView);
+        cordsView = findViewById(R.id.cordsView);
+        typeView = findViewById(R.id.locationType);
+        recyclingTypes = findViewById(R.id.recyclingTypes);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapViewFragment);
         mapFragment.getMapAsync(this);
@@ -85,11 +86,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         getLocationPermission();
+        markerLat = intent.getDoubleExtra("lat", 0);
+        markerLon = intent.getDoubleExtra("lon", 0);
+        binLatLong = new LatLng (markerLat, markerLon);
+        String cordsText = markerLat + ", " + markerLon;
+        locationTitle = intent.getStringExtra("name");
+        locationType = intent.getStringExtra("type");
 
-        // Prompt the user for permission.
-        //checkUserPermission();
-        //getMyLocation();
-        // Get location
+        titleView.setText(locationTitle);
+        cordsView.setText(cordsText);
+        typeView.setText(locationType);
+
     }
 
     /**
@@ -108,15 +115,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         //current location
         LatLng current = new LatLng(lat, lon);
-        System.out.println("lat: " + lat + "; lon: " + lon);
 
         // Turn on the My Location layer and the related control on the map.
         updateLocationUI();
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
-
-        mainMap.addMarker(new MarkerOptions().position(current).title("CURRENT"));
+        mainMap.addMarker(new MarkerOptions().position(binLatLong).title("Bin"));
         mainMap.moveCamera(CameraUpdateFactory.newLatLng(current));
 
     }
@@ -222,86 +227,5 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             Log.e("Exception: %s", e.getMessage(), e);
         }
     }
-
-/*// get location of the user
-    public void getMyLocation(){
-        if (checkUserPermission()){
-            try{
-                gps_enable = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            }
-            catch(Exception err){
-
-            }
-            try{
-                network_enable = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            }
-            catch(Exception err){
-
-            }
-            if (!gps_enable && !network_enable){
-                // alert the user to allow location to be seen
-                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MapsActivity.this);
-                builder.setMessage("Location is not enabled.");
-                builder.create().show();
-
-            }
-            if (gps_enable)
-            {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,locationListener);
-            }
-            if (network_enable)
-            {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,locationListener);
-            }
-        }
-    }
-
-    class MyLocationListener implements LocationListener{
-
-        @Override
-        public void onLocationChanged(@NonNull Location location) {
-            if (location !=null){
-                lat = location.getLatitude();
-                lon = location.getLongitude();
-            }
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(@NonNull String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(@NonNull String provider) {
-
-        }
-    }
-
-    private boolean checkUserPermission(){
-        int location = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        int location2 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
-
-        List<String> listPermission = new ArrayList<>();
-
-        if(location != PackageManager.PERMISSION_GRANTED){
-            listPermission.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-
-        if(location2 != PackageManager.PERMISSION_GRANTED){
-            listPermission.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        }
-
-        if(!listPermission.isEmpty()){
-            ActivityCompat.requestPermissions(this, listPermission.toArray(new String[listPermission.size()]),
-                    1);
-        }
-
-        return true;
-    }*/
 
 }

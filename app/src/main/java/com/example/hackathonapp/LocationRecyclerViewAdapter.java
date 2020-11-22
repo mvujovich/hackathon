@@ -1,7 +1,10 @@
 package com.example.hackathonapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.hackathonapp.LocationViewHolder;
 import com.example.hackathonapp.MapsActivity;
 import com.example.hackathonapp.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 
@@ -40,29 +48,26 @@ public class LocationRecyclerViewAdapter extends RecyclerView.Adapter<LocationVi
     @Override
     public void onBindViewHolder(@NonNull LocationViewHolder holder, int position)
     {
-
-        //holder.basePrice.setText(myData.get(position).getBasePriceString());
-
         final int positionPass = position;
         final String locationName = myData.get(position).getLocationName();
+        final String binType = myData.get(position).getBinType();
+
         String typeName = "";
-        if (myData.get(position) instanceof TrashBin)
+        if (binType.equals("Trash bin"))
         {
             typeName = "Trash bin";
         }
-        else if (myData.get(position) instanceof RecyclerBin)
+        else if (binType.equals("Recycling bin"))
         {
             typeName = "Recycling bin";
         }
-        else if (myData.get(position) instanceof ClothesBin)
+        else if (binType.equals("Clothes recycling bin"))
         {
             typeName = "Clothes recycling bin";
         }
         holder.nameText.setText(locationName);
         holder.typeText.setText(typeName);
-        holder.kmsText.setText("20");
-
-        //final String basePriceMessage = myData.get(position).getBasePriceString();
+        holder.kmsText.setText("10");
 
         holder.getLayout().setOnClickListener(new View.OnClickListener()
         {
@@ -70,12 +75,10 @@ public class LocationRecyclerViewAdapter extends RecyclerView.Adapter<LocationVi
             public void onClick(View view)
             {
                 onClickChangeActivity(positionPass);
-                Intent intent = new Intent(myContext, MapsActivity.class);
-                //intent.putExtra("model", modelMessage);
-                myContext.startActivity(intent);
             }
         });
     }
+
 
     /**
      * This method allows for the data of the listing pressed by the user to be transferred so that
@@ -85,13 +88,27 @@ public class LocationRecyclerViewAdapter extends RecyclerView.Adapter<LocationVi
      */
     public void onClickChangeActivity(int position)
     {
-        //final String modelMessage = myData.get(position).getModel();
-        //final String ownerMessage = myData.get(position).getOwner();
-        //final String basePriceMessage = myData.get(position).getBasePriceString();
         Intent intent = new Intent(myContext, MapsActivity.class);
-        //intent.putExtra("model", modelMessage);
-        //intent.putExtra("owner", ownerMessage);
-        //intent.putExtra("base price", basePriceMessage);
+        final double binLatitude = myData.get(position).getLlat();
+        final double binLongitude = myData.get(position).getLlong();
+        final String binLocation = myData.get(position).getLocationName();
+        final String binType = myData.get(position).getBinType();
+        intent.putExtra("lat", binLatitude);
+        intent.putExtra("lon", binLongitude);
+        intent.putExtra("name", binLocation);
+        if (binType.equals("Recycling bin"))
+        {
+            intent.putExtra("type", "Recycling bin");
+        }
+        else if (binType.equals("Clothes recycling bin"))
+        {
+            intent.putExtra("type", "Clothes recycling bin");
+        }
+
+        else
+        {
+            intent.putExtra("type", "Trash bin");
+        }
         myContext.startActivity(intent);
     }
 

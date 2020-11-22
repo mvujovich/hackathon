@@ -8,9 +8,9 @@ public class RecyclerBin extends Bin {
     boolean paper;
     boolean plastic;
 
-    public RecyclerBin(double longitude, double latitude, String loc,
+    public RecyclerBin(double longitude, double latitude, String loc, String type,
                        boolean g, boolean met, boolean pap, boolean pla) {
-        super(longitude, latitude, loc);
+        super(longitude, latitude, loc, type);
         glass = g;
         metal = met;
         paper = pap;

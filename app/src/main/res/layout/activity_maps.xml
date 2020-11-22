@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MapsActivity">
@@ -34,11 +33,12 @@
     </fragment>
 
     <TextView
-        android:id="@+id/locationTitle"
-        android:layout_width="wrap_content"
+        android:id="@+id/locationTitleView"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:fontFamily="@font/francois_one"
+        android:gravity="center"
         android:text="TextView"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -47,16 +47,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/locationFull"
-        android:layout_width="148dp"
+        android:id="@+id/cordsView"
+        android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:fontFamily="sans-serif-medium"
         android:gravity="center"
-        android:text="TextView"
+        android:text="something .km"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locationTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/locationTitleView" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -66,22 +66,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locationFull"
+        app:layout_constraintTop_toBottomOf="@+id/cordsView"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <TextView
-        android:id="@+id/locationType"
+        android:id="@+id/recyclingTypes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif"
-        android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locationDistrict" />
+        app:layout_constraintTop_toBottomOf="@+id/locationType" />
 
     <TextView
-        android:id="@+id/locationDistrict"
+        android:id="@+id/locationType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -124,5 +123,16 @@
         app:iconPadding="0dp"
         app:layout_constraintStart_toStartOf="@+id/mapViewFragment"
         app:layout_constraintTop_toBottomOf="@+id/zoomIn" />
+
+    <TextView
+        android:id="@+id/mapsActInstr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Find this bin on the map below:"
+        app:layout_constraintBottom_toTopOf="@+id/mapViewFragment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
